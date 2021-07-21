@@ -156,7 +156,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')
 #AUTH_USER_MODEL = 'task.User'
-
+handler404 = 'app.views.404_view'
 
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'index'
