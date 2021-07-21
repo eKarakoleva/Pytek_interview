@@ -2,6 +2,9 @@ from django.db import models
 from django.contrib.postgres.fields import ArrayField
 #from autoslug import AutoSlugField
 from task.helper import unique_slug_generator_name_category, youtube_url_validation
+import task.repositories as repo
+import task.models as m
+from django.contrib import messages 
 
 class Category(models.Model):
     def __str__(self):
@@ -52,7 +55,6 @@ class Product(models.Model):
     old_price = models.DecimalField(max_digits = 20, decimal_places=2)
     promo_price = models.DecimalField(max_digits = 20, decimal_places=2, blank = True, null = True)
     quantity = models.DecimalField(max_digits = 20, decimal_places=2)
-    #uploded_files = 
     #characteristics=
     new_marks = models.BooleanField(default=True)
     video = models.TextField(max_length=255, blank = True)
@@ -63,7 +65,6 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
-        
         can_save = True
         if not self.slug:
             self.slug = unique_slug_generator_name_category(self)
@@ -87,7 +88,6 @@ class PostDocument(models.Model):
     product = models.ForeignKey(Product, default=None, on_delete=models.CASCADE)
     doc = models.FileField(upload_to = 'uploads/documents/')
 
-
 class ConnectedProducts(models.Model): 
     def __str__(self):
         ret_val = str(self.first_product) + ", "+ str(self.second_product)
@@ -98,6 +98,16 @@ class ConnectedProducts(models.Model):
     are_purchased_together = models.BooleanField(default=False)
     are_connected = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('first_product', 'second_product')
+
+    def save(self, *args, **kwargs):  
+        cpRepo = repo.ConnectedProductsRepository(m.ConnectedProducts)
+        is_exists = cpRepo.get_by_two_ids_combination(self.first_product, self.second_product)
+        compare = str(self.first_product) + ", "+ str(self.second_product)
+        if is_exists.count == 0 or str(is_exists[0]) == compare:
+            super(ConnectedProducts, self).save(*args, **kwargs)
+            
 
     
 

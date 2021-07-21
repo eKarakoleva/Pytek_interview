@@ -450,9 +450,12 @@
 							 	{% if product.is_active == True %}
 									<a href = "{% url 'product_details' product.slug %}" class="box box-products">
 										<div class="add-to-cart">
+											
+											{% if product.promo_price != None %}
 											<svg aria-hidden="true" class="shopping-cart-icon">
 												<use xlink:href=" {% static 'images/svg-sprite.svg#shopping_cart_icon' %}"></use>
 											</svg>
+											{% endif %}
 											{% if product.new_marks %}
 												<span class="add-to-cart-label">ново</span>
 											{% endif %}

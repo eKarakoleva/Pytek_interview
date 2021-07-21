@@ -7,6 +7,9 @@ class ProductRepository(object):
 	def get_all(self):
 		return self.model.objects.all()
 
+	def get_name_by_id(self, p_id):
+		return self.model.objects.filter(id = p_id)
+
 	def get_all_active(self):
 		return self.model.objects.filter(is_active = True)
 
@@ -50,6 +53,12 @@ class ConnectedProductsRepository(object):
 			(Q(are_purchased_together = True) | Q(are_connected = True)) &
 			(Q(first_product__is_active = True) & Q(second_product__is_active = True))
 		)
+
+	def get_by_two_ids_combination(self, id1, id2):
+		return self.model.objects.filter(
+			(Q(first_product=id1) & Q(second_product=id2)) |
+			(Q(first_product=id2) & Q(second_product=id1))
+			)
 
 class CategoryRepository(object):
 	def __init__(self, model):
